@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <link rel="stylesheet" type="text/css" href="kaupunkipyorat.css">
+    <title>Kaupunkipyörät</title>
+     <style>
+       #map { height: 400px; width: 50%; position: absolute; right: 50px;}
+    </style>
+</head>
+
+<body>
+    <h1>Kaupunkipyörät</h1>
+    
+    <div id = weatherinfo> 
+    <div id = saa ></div> 
+    <div id = logo></div> 
+    </div>
+    
+    <h>Valitse asema</h><br>
+    <div class="dropdown">
+        <select id = "stations"> </select>
+    </div>
+    
+    <div id="map"></div>
+    
+    <div id =asemantiedot> </div>
+    
+  
+    <script> 
+        // KAUPUNKIPYÖRIEN ASEMAT
+        var xmlhttp = new XMLHttpRequest();
+        var url = "https://api.citybik.es/v2/networks/citybikes-helsinki"; 
+        xmlhttp.onreadystatechange = function() {
+            if (xmlhttp.readyState == 4 && xmlhttp.status == 200) {
+                var myArr = JSON.parse(xmlhttp.responseText);
+                myFunction(myArr.network.stations);
+            }
+        };
+        xmlhttp.open("GET", url, true); 
+        xmlhttp.send();
+        
+        //LISTAA ASEMAT PUDOTUSVALIKKOON
+        function myFunction(arr) { 
+            var out ="";
+            var i;
+            var info;
+            for(i = 0; i < arr.length; i++) {
+                info = {asemannimi: arr[i].name, 
+                        bikeInfo: {vapaatpaikat: arr[i].empty_slots, vapaatpyörät: arr[i].free_bikes}
+                        , sijainti: {lat: arr[i].latitude, lng: arr[i].longitude}};
+                //JSONista stringiks
+                var myJson = JSON.stringify(info);
+                out += '<option value = '+myJson+'>' + info.asemannimi + '</option>';  
+            }
+            document.getElementById("stations").innerHTML = out;
+        }
+        document.getElementById("stations").onclick = function() {
+            showitem()} 
+        
+          
+         // tiedot näkyviin ja mapillle koordinaatit
+            function showitem(){
+                var value = document.getElementById("stations").value;
+                var info = JSON.parse(value);
+                var location = info.sijainti;
+               
+                var map = new google.maps.Map(document.getElementById('map'), {
+                    zoom: 15,
+                    center: location
+                    });
+                var marker = new google.maps.Marker({
+                    position: location,
+                    map: map
+                  });
+                //STtringistä JSONiks
+                var vapaatpyorat = JSON.parse(info.bikeInfo.vapaatpyörät);
+                var vapaatpaikat = JSON.parse(info.bikeInfo.vapaatpaikat);
+                var bikeStr = '<br><br><br><p>Vapaat pyörät: ' + vapaatpyorat + '</p><p>Tyhjät paikat: ' + vapaatpaikat + '</p>';
+                document.getElementById("asemantiedot").innerHTML = bikeStr;
+                saa(location);
+        }
+       
+         //SÄÄTIEDOT APISTA   
+            function saa(location){
+                var sijainti = location;
+                var lat = JSON.parse(sijainti.lat);
+                var lng = JSON.parse(sijainti.lng);
+                var xmlhttp = new XMLHttpRequest();
+                var url = "https://api.openweathermap.org/data/2.5/weather?lat="+lat+"&lon="+lng+"&appid=a8bef477e3c820e50e9dc96ed9fb716d"; 
+                
+                xmlhttp.onreadystatechange = function() {
+                    if (xmlhttp.readyState == 4 && xmlhttp.status == 200) {
+                        var temperature = JSON.parse(xmlhttp.responseText);
+                        var myArr2 = JSON.parse(xmlhttp.responseText);
+                        naytasaa(temperature, myArr2.weather);
+                    }
+            }
+            xmlhttp.open("GET", url, true); 
+            xmlhttp.send();
+            }
+            
+            //SÄÄTIEDOT NÄKYVIIN
+            function naytasaa(temp, arr2){
+               
+                var kelvin = temp.main.temp;
+                var cel = kelvin - 273.16;
+                var c = cel.toFixed(0);
+                var nayta = '<p> Lämpötila: '+ c + ' °C</p>';
+                
+                var i;
+                for(i = 0; i < arr2.length; i++) {
+                   var logoid = arr2[i].icon ;
+                } 
+                var saalogo = "https://openweathermap.org/img/w/"+ logoid +".png";
+                var show = "<img src='" + saalogo  + "'>";
+                document.getElementById("saa").innerHTML = nayta;
+                document.getElementById("logo").innerHTML = show ;
+                }
+    
+    </script>
+    <script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBfI8fk4o1o0aX9zoBSfBKRwhnQd25xu4s&callback=initMap">
+    </script>
+    
+</body>
+</html>

@@ -1,0 +1,6 @@
+{"tyontekijat":
+[{"firstName":"Mauno", "lastName":"Ahonen", "address":"Bulevardi 31", "nro":{"tyo":"123456", "koti":"65432111" }},
+ {"firstName":"Matti", "lastName":"Näsä", "address":"Kivitie 1", "nro":{"tyo":"123456", "koti":"2983748730" }},
+ {"firstName":"Raimo", "lastName":"Vormisto", "address":"Suokuja 12", "nro":{"tyo":"123456", "koti":"949840983" }},
+ {"firstName":"Timo", "lastName":"Silakka", "address":"Jokitie 123", "nro":{"tyo":"983747", "koti":"3984747" }}]
+}

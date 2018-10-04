@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html>
+  <head>
+      <style>li {
+          font-size:0.8em; }
+    </style>
+    </head>
+  <body>
+
+
+    <ol id="list"></ol>
+    
+    <script>
+
+        $(document).ready(function () {
+            $.ajax({
+                type: "GET",
+                url: "http://api.avoindata.net/users",
+                dataType: 'json',
+                cache: false,
+                success: function (data) {
+                    // JSON sisältää kaksi objektia: users ja rights
+                    $.each(data.users, function (i, user) {
+                        // tee mitä haluat jokaiselle
+                        $("#list").append("<li>" + user.handle + "</li>");
+                    });
+                },
+                error: function () {
+                    alert('failure');
+                }
+            });
+        });
+</script>
+</body>
+</html>
